@@ -1,0 +1,70 @@
+* {
+    box-sizing: border-box;
+    padding: 0 auto;
+    margin: 0 auto;
+    font-family: 'Roboto', sans-serif;
+    background-color: gray;
+    font-size: 18px;
+}
+
+.title {
+    font-size: 50px;
+    color: black;
+    margin-top: 50px;
+    text-align: center;
+}
+
+.inputValues {
+    width: 20%;
+}
+
+.boardSize, .minesCount {
+    width: 100%;
+    margin-top: 20px;
+    height: 50px;
+    padding-left: 15px;
+    background-color: white;
+    outline: none;
+}
+
+.submitButton {
+    width: 200px;
+    height: 50px;
+    background-color: white;
+    margin-top: 20px;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.board {
+    display: grid;
+    width: calc(var(--size) * 50px);
+    grid-template-columns: repeat(var(--size), 40px);
+    gap: 10px;
+    margin: 50px auto;
+}
+
+.element {
+    width: 30px;
+    height: 30px;
+    background-color: white;
+    border: 2px solid black;
+}
+
+.element[data-status="default"] {
+    background-color: white;
+}
+
+.element[data-status="mine"] {
+    background-color: red;
+}
+
+.element[data-status="empty"] {
+    background-color: gray;
+}
+
+.element[data-status="non_empty"] {
+    background-color: gray;
+    color: white;
+}
