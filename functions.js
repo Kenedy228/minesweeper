@@ -62,7 +62,7 @@ function checkNearbyValues(currentElement) {
 
     for (let i = -1; i < 2; i++) {
         for (let j = -1; j < 2; j++) {
-            if (boardElements?.[x + i]?.[y + j]) nearbyValues.push(boardElements[x + i][y + j]);
+            if (boardElements[x + i]?.[y + j]) nearbyValues.push(boardElements[x + i][y + j]);
         }
     }
 
@@ -72,23 +72,12 @@ function checkNearbyValues(currentElement) {
 function setValue(x, y) {
     const currentElement = boardElements[x][y];
 
-    console.log(boardElements);
-    let filtered = [];
-    
-    for (let i = 0; i < boardSize; i++) {
-        for (let j = 0; j < boardSize; j++) {
-            
-            filtered.push(boardElements[i][j]);
-        }
-    }
-
-    if (filtered.length === 0)
-
     if (currentElement.status === statusValues.default) {
         if (currentElement.mine) {
             currentElement.status = statusValues.mine;
-            return generateBoard();
-            // return finishGame("lose");
+            generateBoard();
+            finishGame("lose");
+            return
         } else currentElement.status = statusValues.layer;
     } else return;
 
@@ -99,18 +88,44 @@ function setValue(x, y) {
         adjacentLayers.forEach(elem => setValue(+elem.x, +elem.y));
     } else {
         currentElement.text = mines.length;
-        return generateBoard();
+        generateBoard();
+        finishGame();
+        return
     }
 }
 
-function finishGame(status) {
+function finishGame(status = "") {
     if (status === "lose") {
+        document.querySelector(".gameOver").style.setProperty("display", "block");
         document.querySelector(".gameOver").textContent = "Ты нажал на мину, получается проиграл АХАХХАХАХАХАХА";
-    } else if (status === 'win') {
-        document.querySelector(".gameOver").textContent = "Ты выиграл, абалдеть паздравляю";
+        document.querySelector(".replay").style.setProperty("display", "block");
+        boardElements = [];
+    } else {
+        let filtered = [];
+        for (let i = 0; i < boardSize; i++) {
+            for (let j = 0; j < boardSize; j++) {
+                if (boardElements[i][j].status === statusValues.default && !boardElements[i][j].mine) {
+                    filtered.push(boardElements[i][j]);
+                }
+            }
+        }
+        console.log(filtered);
+
+        if (filtered.length === 0) {
+            document.querySelector(".gameOver").style.setProperty("display", "block");
+            document.querySelector(".gameOver").textContent = "Ты победил абалдевание лютое реально";
+            document.querySelector(".replay").style.setProperty("display", "block");
+            for (let i = 0; i < boardSize; i++) {
+                for (let j = 0; j < boardSize; j++) {
+                    if (boardElements[i][j].mine) {
+                        boardElements[i][j].status = statusValues.mine;
+                        generateBoard();
+                    }
+                }
+            }
+            boardElements = [];
+        }
     }
-    document.querySelector(".replay").style.setProperty("display", "block");
-    boardElements = [];
 }
 
 

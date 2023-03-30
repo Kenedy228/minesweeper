@@ -23,6 +23,10 @@
     transform: translateX(-50%);
 }
 
+.replay {
+    margin-left: 0;
+}
+
 .board {
     display: grid;
     width: calc(var(--size) * 50px);

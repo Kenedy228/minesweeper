@@ -5,6 +5,7 @@ const board = document.querySelector(".board");
 const replayButton = document.querySelector(".replay");
 
 playButton.addEventListener("click", () => {
+    document.querySelector(".startGame").style.display = "none";
     return generateElements();
 })
 
@@ -15,6 +16,8 @@ board.addEventListener("click", (e) => {
 })
 
 replayButton.addEventListener("click", () => {
+    document.querySelector(".gameOver").style.display = "none";
+    document.querySelector(".replay").style.display = "none";
     return generateElements();
 })
 
