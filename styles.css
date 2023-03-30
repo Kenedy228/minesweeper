@@ -31,7 +31,7 @@
     margin: 50px auto;
 }
 
-.minesCounter, .layersCounter, .gameOver {
+.minesCounter, .gameOver {
     text-align: center;
     margin-top: 15px;
     margin-bottom: 5px;

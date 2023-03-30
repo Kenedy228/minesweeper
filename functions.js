@@ -1,6 +1,8 @@
 const boardSize = 10;
 const minesCount = 10;
 
+let boardElements = [];
+
 const statusValues = {
     default: "default",
     mine: "mine",
@@ -8,9 +10,6 @@ const statusValues = {
 }
 
 function generateElements() {
-
-    let boardElements = [];
-    let layersCounter = (boardSize ** 2) - minesCount;
 
     for (let x = 0; x < boardSize; x++) {
         boardElements.push([]);
@@ -26,15 +25,14 @@ function generateElements() {
         }
     }
 
-    document.querySelector(".layersCounter").textContent = `Количество свободных клеток: ${layersCounter}`;
     document.querySelector(".minesCounter").textContent = `Количество мин: ${minesCount}`;
 
-    generateMines(boardElements);
-    generateBoard(boardElements);
+    generateMines();
+    generateBoard();
 
 }
 
-function generateMines(boardElements) {
+function generateMines() {
     for (let i = 0; i < minesCount; i++) {
         const minePosition = {x: Math.floor(Math.random() * boardSize), y: Math.floor(Math.random() * boardSize)}
 
@@ -45,7 +43,7 @@ function generateMines(boardElements) {
     }
 }
 
-function generateBoard(boardElements) {
+function generateBoard() {
     const board = document.querySelector(".board");
 
     board.innerHTML = "";
@@ -71,15 +69,26 @@ function checkNearbyValues(currentElement) {
     return nearbyValues;
 }
 
-function setValue(x, y, layersCounter) {
+function setValue(x, y) {
     const currentElement = boardElements[x][y];
-    document.querySelector(".layersCounter").textContent = `Количество свободных клеток: ${layersCounter}`;
+
+    console.log(boardElements);
+    let filtered = [];
+    
+    for (let i = 0; i < boardSize; i++) {
+        for (let j = 0; j < boardSize; j++) {
+            
+            filtered.push(boardElements[i][j]);
+        }
+    }
+
+    if (filtered.length === 0)
 
     if (currentElement.status === statusValues.default) {
         if (currentElement.mine) {
             currentElement.status = statusValues.mine;
             return generateBoard();
-            // return finishGame(currentElement.status);
+            // return finishGame("lose");
         } else currentElement.status = statusValues.layer;
     } else return;
 
@@ -87,24 +96,21 @@ function setValue(x, y, layersCounter) {
     let mines = adjacentLayers.filter(element => element.mine);
 
     if (mines.length === 0) {
-        layersCounter--;
         adjacentLayers.forEach(elem => setValue(+elem.x, +elem.y));
     } else {
         currentElement.text = mines.length;
-        layersCounter--;
-        if (layersCounter === 0) return finishGame();
         return generateBoard();
     }
-
 }
 
-function finishGame(mine = "") {
-    if (mine) {
+function finishGame(status) {
+    if (status === "lose") {
         document.querySelector(".gameOver").textContent = "Ты нажал на мину, получается проиграл АХАХХАХАХАХАХА";
-    } else {
+    } else if (status === 'win') {
         document.querySelector(".gameOver").textContent = "Ты выиграл, абалдеть паздравляю";
     }
     document.querySelector(".replay").style.setProperty("display", "block");
+    boardElements = [];
 }
 
 

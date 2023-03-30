@@ -10,7 +10,7 @@ playButton.addEventListener("click", () => {
 
 board.addEventListener("click", (e) => {
     if (e.target.className === "element") {
-        setValue(+e.target.dataset.x, +e.target.dataset.y, document.querySelector(".layersCounter").textContent.slice(30));
+        setValue(+e.target.dataset.x, +e.target.dataset.y);
     }
 })
 
