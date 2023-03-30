@@ -1,6 +1,5 @@
 * {
     box-sizing: border-box;
-    padding: 0 auto;
     margin: 0 auto;
     font-family: 'Roboto', sans-serif;
     background-color: gray;
@@ -14,20 +13,7 @@
     text-align: center;
 }
 
-.inputValues {
-    width: 20%;
-}
-
-.boardSize, .minesCount {
-    width: 100%;
-    margin-top: 20px;
-    height: 50px;
-    padding-left: 15px;
-    background-color: white;
-    outline: none;
-}
-
-.submitButton {
+.startGame, .replay {
     width: 200px;
     height: 50px;
     background-color: white;
@@ -45,6 +31,16 @@
     margin: 50px auto;
 }
 
+.minesCounter, .layersCounter, .gameOver {
+    text-align: center;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+.replay {
+    display: none;
+}
+
 .element {
     width: 30px;
     height: 30px;
@@ -60,11 +56,6 @@
     background-color: red;
 }
 
-.element[data-status="empty"] {
+.element[data-status="layer"] {
     background-color: gray;
-}
-
-.element[data-status="non_empty"] {
-    background-color: gray;
-    color: white;
 }

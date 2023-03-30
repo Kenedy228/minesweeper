@@ -1,14 +1,16 @@
+const boardSize = 10;
+const minesCount = 10;
+
 const statusValues = {
     default: "default",
     mine: "mine",
-    empty: "empty",
-    non_empty: "non_empty",
+    layer: "layer",
 }
 
-const boardElements = [];
-const board = document.querySelector(".board");
+function generateElements() {
 
-function generateElements(boardSize, minesCount) {
+    let boardElements = [];
+    let layersCounter = (boardSize ** 2) - minesCount;
 
     for (let x = 0; x < boardSize; x++) {
         boardElements.push([]);
@@ -19,82 +21,91 @@ function generateElements(boardSize, minesCount) {
                 mine: false,
                 status: statusValues.default,
             }
-            
+
             boardElements[x].push(element);
         }
     }
 
-    console.log(boardElements);
+    document.querySelector(".layersCounter").textContent = `Количество свободных клеток: ${layersCounter}`;
+    document.querySelector(".minesCounter").textContent = `Количество мин: ${minesCount}`;
 
-    generateMines(minesCount, boardSize, boardElements);
-
-    generateBoard(boardSize);
+    generateMines(boardElements);
+    generateBoard(boardElements);
 
 }
 
-function generateMines(minesCount, boardSize, boardElements) {
+function generateMines(boardElements) {
     for (let i = 0; i < minesCount; i++) {
         const minePosition = {x: Math.floor(Math.random() * boardSize), y: Math.floor(Math.random() * boardSize)}
 
         if (boardElements?.[minePosition.x]?.[minePosition.y]) {
-            if (!boardElements[minePosition.x][minePosition.y].mine) {
-                boardElements[minePosition.x][minePosition.y].mine = true;
-            }
+            let element = boardElements[minePosition.x][minePosition.y];
+            !element.mine ? element.mine = true : i--;
         }
     }
 }
 
-function generateBoard(boardSize) {
-    board.innerHTML = "";
+function generateBoard(boardElements) {
+    const board = document.querySelector(".board");
 
-    board.style.setProperty("--size", boardSize);
+    board.innerHTML = "";
+    board.style.setProperty("--size", String(boardSize));
 
     boardElements.forEach(array => {
         array.forEach(element => {
-            board.insertAdjacentHTML("beforeend", `<div class="element" data-status=${element.status} data-x=${element.x} data-y=${element.y}></div>`);
+            board.insertAdjacentHTML("beforeend", `<div class="element" data-status=${element.status} data-x=${element.x} data-y=${element.y}>${element.text || ""}</div>`);
         })
     })
 }
 
-function checkValue(x, y) {
-    const currentElement = boardElements[x][y];
-    let counter = 0;
-    
-    if (currentElement.mine) {
-        currentElement.status = statusValues.mine;
-        return [currentElement.status];
-    } else {
-        let nearbyValues = checkNearbyValues(currentElement.x, currentElement.y);
-
-        const mines = nearbyValues.filter(element => {
-            return element.mine;
-        })
-
-        if (mines.length === 0) {
-            currentElement.status = statusValues.empty;
-            mines.forEach(elem => checkNearbyValues(elem));
-            return [currentElement.status];
-        } else {
-            currentElement.status = statusValues.non_empty;
-            return [currentElement.status, mines.length];
-        }
-    }
-    
-}
-
-function checkNearbyValues(x, y) {
-    let list = [];
+function checkNearbyValues(currentElement) {
+    const [x, y] = [currentElement.x, currentElement.y];
+    let nearbyValues = [];
 
     for (let i = -1; i < 2; i++) {
         for (let j = -1; j < 2; j++) {
-            if (boardElements?.[+x + i]?.[+y + j]) {
-                list.push(boardElements[+x + i][+y + j]);
-            }
+            if (boardElements?.[x + i]?.[y + j]) nearbyValues.push(boardElements[x + i][y + j]);
         }
     }
 
-    return list;
+    return nearbyValues;
+}
+
+function setValue(x, y, layersCounter) {
+    const currentElement = boardElements[x][y];
+    document.querySelector(".layersCounter").textContent = `Количество свободных клеток: ${layersCounter}`;
+
+    if (currentElement.status === statusValues.default) {
+        if (currentElement.mine) {
+            currentElement.status = statusValues.mine;
+            return generateBoard();
+            // return finishGame(currentElement.status);
+        } else currentElement.status = statusValues.layer;
+    } else return;
+
+    let adjacentLayers = checkNearbyValues(currentElement);
+    let mines = adjacentLayers.filter(element => element.mine);
+
+    if (mines.length === 0) {
+        layersCounter--;
+        adjacentLayers.forEach(elem => setValue(+elem.x, +elem.y));
+    } else {
+        currentElement.text = mines.length;
+        layersCounter--;
+        if (layersCounter === 0) return finishGame();
+        return generateBoard();
+    }
+
+}
+
+function finishGame(mine = "") {
+    if (mine) {
+        document.querySelector(".gameOver").textContent = "Ты нажал на мину, получается проиграл АХАХХАХАХАХАХА";
+    } else {
+        document.querySelector(".gameOver").textContent = "Ты выиграл, абалдеть паздравляю";
+    }
+    document.querySelector(".replay").style.setProperty("display", "block");
 }
 
 
-export {generateElements, checkValue};
+export {generateElements, setValue};
